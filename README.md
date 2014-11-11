@@ -2,7 +2,7 @@ ZepplinMap
 ==========
 
 ##What is this##
-ZepplinMap is a simple code snippet to use if you want to add a Google Map with multiple markers on your web application
+ZepplinMap is a JavaScript class to use if you want to add a Google Map with multiple markers on your web application
 
 ##How does it work ?##
 Simply call it's constructor with your DOM that should contains the map and the list of pins to place in it
