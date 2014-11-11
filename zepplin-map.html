@@ -1,0 +1,155 @@
+<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+
+<div id="map" style="height: 400px; width: 100%;"></div>
+<script>
+    jQuery(function($) {
+
+        var ZepplinMap = (function() {
+            //Const
+            
+            /**
+             * Create a Google Map element and a list of markers on it according to a list of pins
+             * @param {$DOM} $mapDom    The $DOM element in which the map will be created
+             * @param {[array]} pins       Array of {} containing {
+             *                                                title
+             *                                                city
+             *                                                zipCode
+             *                                                address
+             *                                                latitude
+             *                                                longitude
+             *                                                }
+             *  
+             * }
+             * @param {object} properties Object containing all the properties to make the map works
+             * @author : René-Pier Deshaies-Gélinas
+             * @date : 2014-11-11
+             */
+            function ZepplinMap($mapDom, pins, properties) {
+                //Priviliged
+                this.map;
+                this.infoWindow;
+                this.markers = [];
+                this.bounds = new google.maps.LatLngBounds();
+
+                var defaultProperties = {}
+
+                properties = $.extend({}, defaultProperties, properties);
+
+                //Private
+                
+                /**
+                 * Create the Google Map into the DOM, load each markers according to the list of pins and fit the map to these markers
+                 * @return {undefined}
+                 */
+                function load() {
+                    this.map = new google.maps.Map($mapDom.get(0), {
+                        center: new google.maps.LatLng(47, -73),
+                        zoom: 6,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    });
+
+                    for (var i = 0; i < pins.length; i++) {
+                        var pin = pins[i];
+                        loadMarker.call(this, pin);
+                    }
+
+                    this.map.fitBounds(this.bounds);
+                }
+
+                /**
+                 * Create a marker on the map according to a pin element
+                 * @param  {object} pin A single pin element on which the marker will be based on
+                 * @return {undefined}
+                 */
+                function loadMarker(pin) {
+                    var latLng = new google.maps.LatLng(pin.latitude, pin.longitude);
+
+                    marker = new google.maps.Marker({
+                        map: this.map,
+                        position: latLng,
+                        draggable: false,
+                        // icon: markerImage,
+                        title: pin.address
+                    });
+
+                    this.bounds.extend(marker.position);
+
+                    (function(thisRef, marker, pin) {
+                        google.maps.event.addListener(marker, 'click', function() {
+                            if (thisRef.infoWindow) {
+                                thisRef.infoWindow.close();
+                            }
+
+                            thisRef.map.setCenter(marker.getPosition());
+                            thisRef.infoWindow = new google.maps.InfoWindow({
+                                content: "<div>" +
+                                    "   <big>" + pin.title + "</big>" +
+                                    "   <br>" +
+                                    "   <span>" + pin.address + "</span><br/>" +
+                                    "   <span>" + pin.city + "</span><br/>" +
+                                    "   <span>" + pin.zipCode + "</span><br/>" +
+                                    "<div>",
+                            });
+
+                            thisRef.map.setZoom(10);
+                            thisRef.infoWindow.open(thisRef.map, marker);
+                        });
+                    })(this, marker, pin);
+
+                    this.markers.push(marker);
+                }
+
+                /**
+                 * Close the current infoWindow, and remove all markers from the map
+                 * @return {undefined}
+                 */
+                function clearMarkers() {
+                    if (this.infoWindow) {
+                        this.infoWindow.close();
+                    }
+                    for (var i = 0; i < this.markers.length; i++) {
+                        this.markers[i].setMap(null);
+                    }
+
+                    this.bounds = new google.maps.LatLngBounds();
+                    this.markers = [];
+                }
+
+                /**
+                 * Load the map when the window is loaded
+                 * @return {undefined}
+                 */
+                function constructor() {
+                    var thisRef = this;
+                    clearLocations.call(this);
+
+                    google.maps.event.addDomListener(window, 'load', function() {
+                        load.call(thisRef);
+                    });
+                }
+
+                constructor.call(this);
+            }
+
+            //Public
+
+            return ZepplinMap;
+        })();
+
+        //minimified from the client's excel sheet
+        var pins=[
+            {
+            title : "Librairie Au Carrefour",
+            city : "Boucherville",
+            zipCode : "J4B 6P5",
+            address : "1001,
+             boul. de Montarville,
+             local 9a",
+            latitude : 45.59115,
+            longitude : -73.43607
+            },
+        ]
+
+        var geoStore = new ZepplinMap($("#map"), pins, {});
+    });
+</script>
