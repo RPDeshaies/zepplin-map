@@ -136,20 +136,17 @@
             return ZepplinMap;
         })();
 
-        //minimified from the client's excel sheet
         var pins=[
             {
-            title : "Librairie Au Carrefour",
-            city : "Boucherville",
-            zipCode : "J4B 6P5",
-            address : "1001,
-             boul. de Montarville,
-             local 9a",
-            latitude : 45.59115,
-            longitude : -73.43607
+            title : "Bell center",
+            city : "Montréal",
+            zipCode : "H4B 5G0",
+            address : "1909 Avenue des Canadiens-de-Montréal",
+            latitude : 45.496067,
+            longitude : -73.569315
             },
         ]
 
-        var geoStore = new ZepplinMap($("#map"), pins, {});
+        var zepplinMap = new ZepplinMap($("#map"), pins, {});
     });
 </script>
